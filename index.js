@@ -146,7 +146,7 @@ createRemoteRepository(repositoryName)
     .then(() => createDiffFile())
     .then(() => addFiles())
     .then(() => pushToRepository())
-    .then(() => removeRepository())
+    //.then(() => removeRepository())
     .catch(err => {
         removeRepository();
         console.log(err);
