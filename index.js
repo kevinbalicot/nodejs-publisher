@@ -89,7 +89,6 @@ function pushToRepository () {
             }
 
             console.log(`Pushing to repository ...`);
-            console.log(`> ${stdout}`);
 
             return resolve(stdout);
         });
