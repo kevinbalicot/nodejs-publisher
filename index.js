@@ -26,7 +26,7 @@ function createRemoteRepository (name) {
         request
             .post(`${apiUrl}/repositories`, (err, res, body) => {
                 console.log('Creating remote repository ...');
-                console.log(`> ${res.statusCode}`)
+                console.log(`> ${res.statusCode}`);
 
                 if (err) {
                     return reject(err);
@@ -35,6 +35,23 @@ function createRemoteRepository (name) {
                 return resolve(body);
             })
             .form({ name: name });
+    });
+}
+
+function cloneRemoteRepository (name) {
+    return new Promise((resolve, reject) => {
+        request
+            .post(`${apiUrl}/repositories/clone`, (err, res, body) => {
+                console.log('Cloning remote repository ...');
+                console.log(`> ${res.statusCode}`);
+
+                if (err) {
+                    return reject(err);
+                }
+
+                return resolve(body);
+            })
+            .form({ path: `${remoteRepository}/${name}.git`, name: name });
     });
 }
 
@@ -145,6 +162,7 @@ createRemoteRepository(repositoryName)
     .then(() => createDiffFile())
     .then(() => addFiles())
     .then(() => pushToRepository())
+    .then(() => cloneRemoteRepository(time + '_clone'))
     .then(() => removeRepository())
     .catch(err => {
         removeRepository();
