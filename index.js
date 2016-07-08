@@ -52,7 +52,7 @@ function cloneRemoteRepository (name) {
 
                 return resolve(body);
             })
-            .form({ path: `${remoteRepository}/${name}.git`, name: name + '_clone' });
+            .form({ path: `/var/docker-sources/${name}.git`, name: name + '_clone' });
     });
 }
 
