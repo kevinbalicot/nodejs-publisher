@@ -12,7 +12,7 @@ const target = `${home}/${time}`;
 const ip = '92.222.88.16';
 const port = '8080';
 const apiUrl = `http://${ip}:${port}`;
-const remoteRepository = `git@${ip}:/var/docker-sources`;
+const remoteRepository = `ssh://git@${ip}:/var/docker-sources`;
 
 program
   .version('0.0.1')
@@ -146,7 +146,7 @@ createRemoteRepository(repositoryName)
     .then(() => createDiffFile())
     .then(() => addFiles())
     .then(() => pushToRepository())
-    //.then(() => removeRepository())
+    .then(() => removeRepository())
     .catch(err => {
         removeRepository();
         console.log(err);
