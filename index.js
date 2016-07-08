@@ -44,6 +44,7 @@ function cloneRemoteRepository (name) {
             .post(`${apiUrl}/repositories/clone`, (err, res, body) => {
                 console.log('Cloning remote repository ...');
                 console.log(`> ${res.statusCode}`);
+                console.log(body);
 
                 if (err) {
                     return reject(err);
