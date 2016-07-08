@@ -96,6 +96,20 @@ function pushToRepository () {
     });
 }
 
+function createDiffFile () {
+    return new Promise((resolve, reject) => {
+        exec(`echo ${time} > .diff`, (err, stdout, stderr) => {
+            if (!!err) {
+                return reject(err);
+            }
+
+            console.log(`Creating gitingore file...`);
+
+            return resolve(stdout);
+        });
+    });
+}
+
 function createIgnoreFile () {
     return new Promise((resolve, reject) => {
         exec(`echo node_modules > .gitignore`, (err, stdout, stderr) => {
@@ -129,6 +143,7 @@ createRemoteRepository(repositoryName)
     .then(() => initLocalRepository())
     .then(() => addRepository(repositoryName))
     .then(() => createIgnoreFile())
+    .then(() => createDiffFile())
     .then(() => addFiles())
     .then(() => pushToRepository())
     .then(() => removeRepository())
