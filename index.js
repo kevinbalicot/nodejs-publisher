@@ -52,7 +52,7 @@ function cloneRemoteRepository (name) {
 
                 return resolve(body);
             })
-            .form({ path: `${remoteRepository}/${name}.git`, name: name });
+            .form({ path: `${remoteRepository}/${name}.git`, name: name + '_clone' });
     });
 }
 
@@ -163,7 +163,7 @@ createRemoteRepository(repositoryName)
     .then(() => createDiffFile())
     .then(() => addFiles())
     .then(() => pushToRepository())
-    .then(() => cloneRemoteRepository(time + '_clone'))
+    .then(() => cloneRemoteRepository(repositoryName))
     .then(() => removeRepository())
     .catch(err => {
         removeRepository();
