@@ -7,7 +7,7 @@ The command publishes on a server with docker and NodeJs v6 image installed.
 
 ##INSTALLATION
 
-* After install a server with docker and Docker API (link soon)
+* After install a server with docker and Docker API ([link](https://github.com/kevinbalicot/docker-api/blob/master/README.md)
 * After cloning
 
 ```
