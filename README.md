@@ -1,12 +1,14 @@
 #PUBLISHER
 
-A nodejs application publisher (with docker)
-Publish on a server with docker and node 6 image
+A nodejs applications publisher (with docker).
+
+The command publishes on a server with docker and NodeJs v6 image installed.
 
 
 ##INSTALLATION
 
-After cloning
+* After install a server with docker and Docker API (link soon)
+* After cloning
 
 ```
 & npm install -g
