@@ -2,12 +2,11 @@
 
 A nodejs applications publisher (with docker).
 
-The command publishes on a server with docker and NodeJs v6 image installed.
+The command publishes on a server with docker
 
 
 ##INSTALLATION
 
-* After install a server with docker and Docker API ([link](https://github.com/kevinbalicot/docker-api/blob/master/README.md))
 * After cloning
 
 ```
@@ -17,10 +16,23 @@ The command publishes on a server with docker and NodeJs v6 image installed.
 ## USAGE
 
 ```
-& cd my-nodejs-app
-& publish --repository my-nodejs-app --user root --ip 10.0.0.0 --port 8888
+$ publish [options]
+$ publish [command] [options]
+
+Commands:
+
+    list [options]           List all containers running
+    remove [options] <name>  Remove container by name
+    stop [options] <name>    Stop container by name
+    start [options] <name>   Start container by name
+
+Options:
+
+    -h, --help           output usage information
+    -V, --version        output the version number
+    -p, --port [port]    DEPRECATED - server port (for docker api)
+    -i, --ip [ip]        ssh ip
+    -u, --user [user]    ssh user
+    -n, --name [name]    docker name
+    -im --image [image]  docker image
 ```
-
-###TODO
-
-* Manage docker container
