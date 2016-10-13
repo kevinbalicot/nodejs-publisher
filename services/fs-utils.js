@@ -2,6 +2,7 @@
 
 const exec = require('child_process').exec;
 const fs = require('fs');
+const colors = require('colors');
 
 class FsUtils {
 
@@ -77,7 +78,7 @@ class FsUtils {
                     return reject(err);
                 }
 
-                console.log(stdout);
+                console.log(String(stdout).yellow);
 
                 return resolve(stdout);
             });

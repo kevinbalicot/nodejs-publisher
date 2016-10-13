@@ -4,11 +4,12 @@ const Publisher = require('./publisher');
 const fs = require('./fs-utils');
 const SshUtils = require('./ssh-utils');
 const DockerApiUtils = require('./docker-api-utils');
+const colors = require('colors');
 
 class RemotePublisher extends Publisher {
 
-    constructor (ip, port, user, name) {
-        super(ip, port, user, name);
+    constructor (ip, port, user, name, image) {
+        super(ip, port, user, name, image);
         this.ssh = new SshUtils(ip, user);
         this.docker = new DockerApiUtils(ip, port);
     }
@@ -18,41 +19,54 @@ class RemotePublisher extends Publisher {
             .then(() => fs.pwd())
             .then(pwd => fs.copyDir(`${pwd}/*`, this.tmp))
             .then(() => fs.zip(this.tmp, this.time))
-            .catch(err => console.log(err));
+            .catch(err => console.log(String(err).red));
     }
 
     publish () {
-        return this.ssh.exec(`mkdir /var/docker-sources/${this.time}`)
-            .then(() => this.ssh.copy(`${this.tmp}/${this.time}.zip`, `/var/docker-sources/${this.time}`))
-            .then(() => this.ssh.exec(`unzip /var/docker-sources/${this.time}/${this.time}.zip -d /var/docker-sources/${this.time}`))
+        return this.ssh.exec(`mkdir -p ${this.remoteDir}`)
+            .then(() => this.ssh.exec(`cd ${this.remoteDir} && rm -rf *`))
+            .then(() => this.ssh.copy(`${this.tmp}/${this.time}.zip`, `${this.remoteDir}`))
+            .then(() => this.ssh.exec(`unzip ${this.remoteDir}/${this.time}.zip -d ${this.remoteDir}`))
             .then(() => {
                 console.log('Installing node modules ...');
-                return this.ssh.exec(`cd /var/docker-sources/${this.time} && npm install`);
+                return this.ssh.exec(`cd ${this.remoteDir} && npm install`);
+            })
+            .then(() => {
+                if (this.name !== null) {
+                    return this.ssh.exec(`docker stop ${this.name} && docker rm ${this.name}`, false)
+                        .catch(err => {});
+                }
             })
             .then(() => this.docker.getFreePort())
             .then(port => {
-                this.docker.runContainer(this.getContainerOptions(port), this.name);
+                console.log('Try to run container on port ' + port);
                 this.finalUrl = `http://${this.ip}:${port}`;
+                return this.ssh.exec(`docker run -d ${this.name !== null ? '--name ' + this.name : ''} --volume ${this.remoteDir}:/volume --workdir /volume --publish ${port}:8080/tcp ${this.image} "npm start"`, false);
             })
-            .catch(err => console.log(err));
+            .then(uid => console.log(`Container ${uid} running !`.green))
+            .catch(err => console.log(String(err).red));
     }
 
-    getContainerOptions (port) {
-        console.log('Try to run container on port ' + port);
+    listContainers () {
+        return this.ssh.exec('docker ps -a');
+    }
 
-        return JSON.parse(`{
-            "Image": "node:6",
-            "WorkingDir": "/volume",
-            "Volumes": { "/volume": {} },
-            "Cmd": ["npm", "start"],
-            "ExposedPorts": { "8080/tcp": {} },
-            "Env": ["NODE_PORT=8080"],
-            "LogPath": "/var/docker-sources/${this.time}/${this.time}.log",
-            "HostConfig": {
-                "Binds": ["/var/docker-sources/${this.time}:/volume"],
-                "PortBindings": { "8080/tcp": [{ "HostPort": "${port}" }] }
-            }
-        }`);
+    removeContainer (name) {
+        return this.ssh.exec(`docker rm -f ${name}`, false)
+            .then(uid => console.log(`Container ${uid} removed !`.green))
+            .catch(err => console.log(String(err).red));
+    }
+
+    stopContainer (name) {
+        return this.ssh.exec(`docker stop ${name}`, false)
+            .then(uid => console.log(`Container ${uid} stopped !`.green))
+            .catch(err => console.log(String(err).red));
+    }
+
+    startContainer (name) {
+        return this.ssh.exec(`docker start ${name}`, false)
+            .then(uid => console.log(`Container ${uid} started !`.green))
+            .catch(err => console.log(String(err).red));
     }
 }
 

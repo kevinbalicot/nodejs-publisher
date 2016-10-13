@@ -1,15 +1,10 @@
 {
   "name": "publish",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Node application publisher",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "config": {
-      "ip": "localhost",
-      "port": "8080",
-      "user": "root"
   },
   "bin": {
     "publish": "./index.js"
@@ -17,6 +12,7 @@
   "author": "kevin balicot <kevinbalicot@gmail.com>",
   "license": "ISC",
   "dependencies": {
+    "colors": "^1.1.2",
     "commander": "^2.9.0",
     "request": "^2.72.0"
   }
