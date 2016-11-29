@@ -2,16 +2,15 @@
 
 const Publisher = require('./publisher');
 const fs = require('./fs-utils');
+const net = require('./net-utils');
 const SshUtils = require('./ssh-utils');
-const DockerApiUtils = require('./docker-api-utils');
 const colors = require('colors');
 
 class RemotePublisher extends Publisher {
 
     constructor (ip, port, user, name, image) {
         super(ip, port, user, name, image);
-        this.ssh = new SshUtils(ip, user);
-        this.docker = new DockerApiUtils(ip, port);
+        this.ssh = new SshUtils(ip, user, port);
     }
 
     prepare () {
@@ -37,7 +36,7 @@ class RemotePublisher extends Publisher {
                         .catch(err => {});
                 }
             })
-            .then(() => this.docker.getFreePort())
+            .then(() => net.getFreePort(this.ip))
             .then(port => {
                 console.log('Try to run container on port ' + port);
                 this.finalUrl = `http://${this.ip}:${port}`;

@@ -9,9 +9,9 @@ const exec = require('child_process').exec;
 program
   .version(pj.version)
   .usage('[options]')
-  .option('-p, --port [port]', 'DEPRECATED - server port (for docker api)', '8888')
   .option('-i, --ip [ip]', 'ssh ip', 'localhost')
   .option('-u, --user [user]', 'ssh user', 'root')
+  .option('-p, --port [port]', 'ssh port', '22')
   .option('-n, --name [name]', 'docker name', null)
   .option('-im --image [image]', 'docker image', 'node:latest');
 
@@ -45,13 +45,14 @@ program.parse(process.argv);
 exec('cat $(pwd)/package.json', (err, stdout, stderr) => {
     let params = {};
     try {
-        params = JSON.parse(stdout);
-        params = params.publish || {};
+        let pj = JSON.parse(stdout);
+        params = pj.publish || {};
+        params.name = pj.name || null;
     } catch (e) {
         console.log(e);
     }
 
-    let publisher = new RemotePublisher(params.ip || program.ip, program.port, params.user || program.user, program.name, program.image);
+    let publisher = new RemotePublisher(params.ip || program.ip, params.port || program.port, params.user || program.user, params.name || program.name, program.image);
 
     if (!!program.args.find(arg => arg === 'list')) {
         publisher.listContainers();

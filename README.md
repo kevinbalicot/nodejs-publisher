@@ -1,8 +1,8 @@
 #PUBLISHER
 
-A nodejs applications publisher (with docker).
+A nodejs applications publisher (via ssh).
 
-The command publishes on a server with docker
+The command publishes on a server with docker and run container
 
 
 ##INSTALLATION
@@ -30,8 +30,8 @@ Options:
 
     -h, --help           output usage information
     -V, --version        output the version number
-    -p, --port [port]    DEPRECATED - server port (for docker api)
     -i, --ip [ip]        ssh ip
+    -p, --port [port]    ssh port
     -u, --user [user]    ssh user
     -n, --name [name]    docker name
     -im --image [image]  docker image
