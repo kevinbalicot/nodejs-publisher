@@ -1,20 +1,22 @@
 #!/usr/bin/env node
-'use strict';
 
-const pj = require('./package.json');
-const program = require('commander');
-const RemotePublisher = require('./services/remote-publisher');
 const exec = require('child_process').exec;
+const pj = require('./../package.json');
+const program = require('commander');
+
+const SSHConnector = require('./connectors/ssh');
+const LocalConnector = require('./connectors/local');
+const Publisher = require('./services/publisher');
 
 program
   .version(pj.version)
   .usage('[options]')
-  .option('-i, --ip [ip]', 'ssh ip', 'localhost')
-  .option('-u, --user [user]', 'ssh user', 'root')
-  .option('-p, --port [port]', 'ssh port', '22')
+  .option('-i, --ip [ip]', 'ssh ip', null)
+  .option('-u, --ssh-user [user]', 'ssh user', null)
+  .option('-P, --ssh-port [port]', 'ssh port', null)
+  .option('-p --port [port]', 'try to use custom port (default: automatically)')
   .option('-n, --name [name]', 'docker name', null)
   .option('-im --image [image]', 'docker image', 'node:latest');
-
 
 program
     .command('list')
@@ -44,6 +46,9 @@ program.parse(process.argv);
 
 exec('cat $(pwd)/package.json', (err, stdout, stderr) => {
     let params = {};
+    let connector = {};
+    let container = {};
+
     try {
         let pj = JSON.parse(stdout);
         params = pj.publish || {};
@@ -52,16 +57,30 @@ exec('cat $(pwd)/package.json', (err, stdout, stderr) => {
         console.log(e);
     }
 
-    let publisher = new RemotePublisher(params.ip || program.ip, params.port || program.port, params.user || program.user, params.name || program.name, program.image);
+    if (!!params.ssh || !!program.sshUser) {
+        connector = new SSHConnector(
+            program.ip || params.ssh.ip,
+            program.sshUser || params.ssh.user,
+            program.sshPort || params.ssh.port || 22
+        );
+    } else {
+        connector = new LocalConnector();
+    }
+
+    container.name = program.name || params.name;
+    container.image = program.image || params.image;
+    container.port = program.port || params.port;
+
+    let publisher = new Publisher(connector, container);
 
     if (!!program.args.find(arg => arg === 'list')) {
-        publisher.listContainers();
+        connector.listContainers();
     } else if (!!program.args.find(arg => arg === 'remove')) {
-        publisher.removeContainer(program.args[1]);
+        connector.removeContainer(program.args[1] || params.name);
     } else if (!!program.args.find(arg => arg === 'stop')) {
-        publisher.stopContainer(program.args[1]);
+        connector.stopContainer(program.args[1] || params.name);
     } else if (!!program.args.find(arg => arg === 'start')) {
-        publisher.startContainer(program.args[1]);
+        connector.startContainer(program.args[1] || params.name);
     } else {
         publisher.run();
     }

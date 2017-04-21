@@ -1,10 +1,20 @@
-'use strict';
-
 const net = require('net');
 
+/**
+ * NetUtils module
+ * @module NetUtils
+ */
 class NetUtils {
 
-    static isFreePort (host, port) {
+    /**
+     * @param {string} host
+     * @param {string|number} port
+     *
+     * @return {Promise}
+     *
+     * @alias module:NetUtils
+     */
+    static isFreePort(host, port) {
         const client = new net.Socket();
 
         return new Promise((resolve, reject) => {
@@ -17,7 +27,15 @@ class NetUtils {
         });
     }
 
-    static getFreePort (host, port = 9000) {
+    /**
+     * @param {string} host
+     * @param {string|number} [port=9000]
+     *
+     * @return {Promise}
+     *
+     * @alias module:NetUtils
+     */
+    static getFreePort(host, port = 9000) {
         return NetUtils.isFreePort(host, port)
             .catch(err => NetUtils.getFreePort(host, ++port));
     }

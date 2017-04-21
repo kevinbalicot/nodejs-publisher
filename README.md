@@ -1,19 +1,40 @@
 #PUBLISHER
 
-A nodejs applications publisher (via ssh).
+A nodejs applications publisher (via ssh or localy).
 
-The command publishes on a server with docker and run container
-
+The command publishes on a server with docker and run container. You can add configuration into `package.json`.
 
 ##INSTALLATION
 
-* After cloning
-
 ```
-& npm install -g
+& npm install docker-publisher
 ```
 
-## USAGE
+Into `package.json`
+
+```
+"scripts": {
+    "start": "node index.js",
+    "publish": "publish"
+},
+"publish": {
+    "ssh": {
+      "ip": "90.700.800.900",
+      "user": "root",
+      "port": 22
+    },
+    "image": "node:latest",
+    "port": "8080"
+}
+```
+
+And
+
+```
+& npm start
+```
+
+## CLI USAGE
 
 ```
 $ publish [options]
@@ -33,6 +54,7 @@ Options:
     -i, --ip [ip]        ssh ip
     -p, --port [port]    ssh port
     -u, --user [user]    ssh user
+    -c, --custom [port]   try to use custom port (default: automatically)
     -n, --name [name]    docker name
     -im --image [image]  docker image
 ```
