@@ -1,10 +1,10 @@
-#PUBLISHER
+# PUBLISHER
 
 A nodejs applications publisher (via ssh or localy).
 
 The command publishes on a server with docker and run container. You can add configuration into `package.json`.
 
-##INSTALLATION
+## INSTALLATION
 
 ```
 & npm install docker-publisher
