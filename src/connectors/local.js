@@ -36,7 +36,7 @@ class LocalConnector {
             .then(() => fsUtils.unzip(`${this.remoteDir}/${container.zipName}`, this.remoteDir))
             .then(() => {
                 console.log('Installing node modules ...');
-                return fsUtils.exec(`cd ${this.remoteDir} && npm install`);
+                return fsUtils.exec(`cd ${this.remoteDir} && npm install --production`);
             })
             .then(() => {
                 if (container.name !== null) {

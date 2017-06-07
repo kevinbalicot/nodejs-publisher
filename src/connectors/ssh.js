@@ -45,7 +45,7 @@ class SSHConnector {
             .then(() => this.ssh.exec(`unzip ${this.remoteDir}/${container.zipName} -d ${this.remoteDir}`))
             .then(() => {
                 console.log('Installing node modules ...');
-                return this.ssh.exec(`cd ${this.remoteDir} && npm install`);
+                return this.ssh.exec(`cd ${this.remoteDir} && npm install --production`);
             })
             .then(() => {
                 if (container.name !== null) {

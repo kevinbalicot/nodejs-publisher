@@ -16,7 +16,7 @@ program
   .option('-P, --ssh-port [port]', 'ssh port', null)
   .option('-p --port [port]', 'try to use custom port (default: automatically)')
   .option('-n, --name [name]', 'docker name', null)
-  .option('-im --image [image]', 'docker image', 'node:latest');
+  .option('-im --image [image]', 'docker image', null);
 
 program
     .command('list')
