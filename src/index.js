@@ -52,7 +52,7 @@ exec('cat $(pwd)/package.json', (err, stdout, stderr) => {
     try {
         let pj = JSON.parse(stdout);
         params = pj.publish || {};
-        params.name = pj.name || null;
+        params.name = pj.name || (new Date()).getTime();
     } catch (e) {
         console.log(e);
     }

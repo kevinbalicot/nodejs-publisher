@@ -1,6 +1,7 @@
 const colors = require('colors');
 
 const SSHUtils = require('./../services/ssh-utils');
+const netUtils = require('./../services/net-utils');
 
 /**
  * SSHConnector module
@@ -44,7 +45,7 @@ class SSHConnector {
             .then(() => this.ssh.copy(`${container.zipPath}/${container.zipName}`, `${this.remoteDir}`))
             .then(() => this.ssh.exec(`unzip ${this.remoteDir}/${container.zipName} -d ${this.remoteDir}`))
             .then(() => {
-                console.log('Installing node modules ...');
+                console.log('installing node modules'.yellow);
                 return this.ssh.exec(`cd ${this.remoteDir} && npm install --production`);
             })
             .then(() => {
@@ -54,20 +55,23 @@ class SSHConnector {
 
                 return;
             })
-            .then(() => {
-                if (container.port) {
-                    return container.port;
-                }
-
-                return net.getFreePort(this.ip)
-            })
+            .then(() => netUtils.getFreePort(this.ip, container.port))
             .then(port => {
-                console.log('Try to run container on port ' + port);
+                console.log(`trying to run container on port ${port}`.yellow);
                 this.url = `http://${this.ip}:${port}`;
-                // HERE check if there are Dockerfile
-                return this.ssh.exec(`docker run -d ${container.name !== null ? '--name ' + container.name : ''} --volume ${this.remoteDir}:/volume --workdir /volume --publish ${port}:8080/tcp ${container.image} "npm start"`, false);
+
+                return this.ssh.exec(`ls -l ${this.remoteDir}`).then(data => {
+                    if (data.match(/Dockerfile/i)) {
+                        console.log('found Dockerfile, building image.'.yellow);
+
+                        return this.ssh.exec(`cd ${this.remoteDir} && docker build -t ${container.name}-image .`)
+                            .then(() => this.ssh.exec(`docker run -d --name ${container.name} --publish ${port}:8080/tcp ${container.name}-image`));
+                    } else {
+                        return this.ssh.exec(`docker run -d --name ${container.name} --volume ${this.remoteDir}:/volume --workdir /volume --publish ${port}:8080/tcp ${container.image} "npm start"`);
+                    }
+                });
             })
-            .then(uid => console.log(`Container ${uid} running !`.green))
+            .then(uid => console.log(`Container ${uid} running!`.green))
             .catch(err => console.log(String(err).red));
     }
 
@@ -81,7 +85,7 @@ class SSHConnector {
      */
     startContainer(name) {
         return this.ssh.exec(`docker start ${name}`, false)
-            .then(uid => console.log(`Container ${uid} started !`.green))
+            .then(uid => console.log(`Container ${uid} started!`.green))
             .catch(err => console.log(String(err).red));
     }
 
@@ -95,7 +99,7 @@ class SSHConnector {
      */
     removeContainer(name) {
         return this.ssh.exec(`docker rm -f ${name}`, false)
-            .then(uid => console.log(`Container ${uid} removed !`.green))
+            .then(uid => console.log(`Container ${uid} removed!`.green))
             .catch(err => console.log(String(err).red));
     }
 
@@ -109,7 +113,7 @@ class SSHConnector {
      */
     stopContainer(name) {
         return this.ssh.exec(`docker stop ${name}`, false)
-            .then(uid => console.log(`Container ${uid} stopped !`.green))
+            .then(uid => console.log(`Container ${uid} stopped!`.green))
             .catch(err => console.log(String(err).red));
     }
 

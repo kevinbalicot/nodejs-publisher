@@ -7,7 +7,7 @@ The command publishes on a server with docker and run container. You can add con
 ## INSTALLATION
 
 ```
-& npm install docker-publisher
+& npm install --save-dev docker-publisher
 ```
 
 Into `package.json`
@@ -31,7 +31,7 @@ Into `package.json`
 And
 
 ```
-& npm start
+& npm run publish
 ```
 
 ## CLI USAGE

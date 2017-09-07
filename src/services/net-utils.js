@@ -1,4 +1,6 @@
 const net = require('net');
+const dgram = require('dgram');
+const colors = require('colors');
 
 /**
  * NetUtils module
@@ -14,31 +16,18 @@ class NetUtils {
      *
      * @alias module:NetUtils
      */
-    static isFreePort(host, port) {
-        const client = new net.Socket();
-
+    getFreePort(host, port = 9000) {
         return new Promise((resolve, reject) => {
-            client.connect({ host, port }, () => {
-                reject();
-                client.destroy();
-            }).on('error', err => {
-                resolve(port);
-            });
-        });
-    }
+            const client = new net.Socket();
 
-    /**
-     * @param {string} host
-     * @param {string|number} [port=9000]
-     *
-     * @return {Promise}
-     *
-     * @alias module:NetUtils
-     */
-    static getFreePort(host, port = 9000) {
-        return NetUtils.isFreePort(host, port)
-            .catch(err => NetUtils.getFreePort(host, ++port));
+            client.connect({ host, port }, () => {
+                client.destroy();
+                console.log(`port ${port} already used!`.yellow);
+                
+                return resolve(this.getFreePort(host, ++port));
+            }).on('error', err => resolve(port));
+        });
     }
 }
 
-module.exports = NetUtils;
+module.exports = new NetUtils();

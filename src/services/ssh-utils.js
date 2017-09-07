@@ -27,7 +27,7 @@ class SSHUtils {
      *
      * @return {Promise}
      */
-    exec(cmd, consoleLog = true) {
+    exec(cmd, consoleLog = false) {
         return new Promise((resolve, reject) => {
             exec(`ssh ${this.user}@${this.ip} -p ${this.port} "${cmd}"`, (err, stdout, stderr) => {
                 if (!!err) {
@@ -52,13 +52,11 @@ class SSHUtils {
      */
     copy(file, path) {
         return new Promise((resolve, reject) => {
-            console.log(`Coping ${file} at ${this.ip}:${path} ...`);
+            console.log(`coping ${file} at ${this.ip}:${path}`.yellow);
             exec(`scp -P ${this.port} ${file} ${this.user}@${this.ip}:${path}`, (err, stdout, stderr) => {
                 if (!!err) {
                     return reject(err);
                 }
-
-                console.log(stdout);
 
                 return resolve(stdout.trim());
             });

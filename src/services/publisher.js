@@ -21,9 +21,6 @@ class Publisher {
 
         this.time = (new Date()).getTime();
         this.tmp = `/tmp/${this.name || this.time}`;
-
-
-        this.finalUrl = null;
     }
 
     /**
