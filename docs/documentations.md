@@ -273,30 +273,15 @@ Execute command
 ## NetUtils
 NetUtils module
 
+<a name="exp_module_NetUtils--NetUtils+getFreePort"></a>
 
-* [NetUtils](#module_NetUtils)
-    * [NetUtils.isFreePort(host, port)](#exp_module_NetUtils--NetUtils.isFreePort) ⇒ <code>Promise</code> ⏏
-    * [NetUtils.getFreePort(host, [port])](#exp_module_NetUtils--NetUtils.getFreePort) ⇒ <code>Promise</code> ⏏
-
-<a name="exp_module_NetUtils--NetUtils.isFreePort"></a>
-
-### NetUtils.isFreePort(host, port) ⇒ <code>Promise</code> ⏏
-**Kind**: Exported function  
-
-| Param | Type |
-| --- | --- |
-| host | <code>string</code> | 
-| port | <code>string</code> \| <code>number</code> | 
-
-<a name="exp_module_NetUtils--NetUtils.getFreePort"></a>
-
-### NetUtils.getFreePort(host, [port]) ⇒ <code>Promise</code> ⏏
+### NetUtils#getFreePort(host, port) ⇒ <code>Promise</code> ⏏
 **Kind**: Exported function  
 
 | Param | Type | Default |
 | --- | --- | --- |
 | host | <code>string</code> |  | 
-| [port] | <code>string</code> \| <code>number</code> | <code>9000</code> | 
+| port | <code>string</code> \| <code>number</code> | <code>9000</code> | 
 
 <a name="module_Publisher"></a>
 
