@@ -50,7 +50,7 @@ class LocalConnector {
                     return container.port;
                 }
 
-                return 8080;//net.getFreePort(this.ip);
+                return 8080; //net.getFreePort(this.ip);
             })
             .then(port => {
                 console.log('Try to run container on port ' + port);
@@ -71,7 +71,7 @@ class LocalConnector {
      * @alias module:LocalConnector
      */
     startContainer(name) {
-        return fsUtils.exec(`docker start ${name}`, false)
+        return fsUtils.exec(`docker start ${name}`)
             .then(uid => console.log(`Container ${uid} started !`.green))
             .catch(err => console.log(String(err).red));
     }
@@ -85,7 +85,7 @@ class LocalConnector {
      * @alias module:LocalConnector
      */
     removeContainer(name) {
-        return fsUtils.exec(`docker rm -f ${name}`, false)
+        return fsUtils.exec(`docker rm -f ${name}`)
             .then(uid => console.log(`Container ${uid} removed !`.green))
             .catch(err => console.log(String(err).red));
     }
@@ -99,7 +99,7 @@ class LocalConnector {
      * @alias module:LocalConnector
      */
     stopContainer(name) {
-        return fsUtils.exec(`docker stop ${name}`, false)
+        return fsUtils.exec(`docker stop ${name}`)
             .then(uid => console.log(`Container ${uid} stopped !`.green))
             .catch(err => console.log(String(err).red));
     }
@@ -112,7 +112,9 @@ class LocalConnector {
      * @alias module:LocalConnector
      */
     listContainers() {
-        return fsUtils.exec('docker ps -a');
+        return fsUtils.exec('docker ps -a')
+            .then(list => console.log(list))
+            .catch(err => console.log(String(err).red))
     }
 }
 

@@ -84,7 +84,7 @@ class SSHConnector {
      * @alias module:SSHConnector
      */
     startContainer(name) {
-        return this.ssh.exec(`docker start ${name}`, false)
+        return this.ssh.exec(`docker start ${name}`)
             .then(uid => console.log(`Container ${uid} started!`.green))
             .catch(err => console.log(String(err).red));
     }
@@ -98,7 +98,7 @@ class SSHConnector {
      * @alias module:SSHConnector
      */
     removeContainer(name) {
-        return this.ssh.exec(`docker rm -f ${name}`, false)
+        return this.ssh.exec(`docker rm -f ${name}`)
             .then(uid => console.log(`Container ${uid} removed!`.green))
             .catch(err => console.log(String(err).red));
     }
@@ -112,7 +112,7 @@ class SSHConnector {
      * @alias module:SSHConnector
      */
     stopContainer(name) {
-        return this.ssh.exec(`docker stop ${name}`, false)
+        return this.ssh.exec(`docker stop ${name}`)
             .then(uid => console.log(`Container ${uid} stopped!`.green))
             .catch(err => console.log(String(err).red));
     }
@@ -125,7 +125,9 @@ class SSHConnector {
      * @alias module:SSHConnector
      */
     listContainers() {
-        return this.ssh.exec('docker ps -a');
+        return this.ssh.exec('docker ps -a')
+            .then(list => console.log(list))
+            .catch(err => console.log(String(err).red));
     }
 }
 
