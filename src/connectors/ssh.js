@@ -38,6 +38,7 @@ class SSHConnector {
      * @alias module:SSHConnector
      */
     publish(container) {
+        const debug = container.debug;
         this.remoteDir += `/${container.name || this.time}`;
 
         return this.ssh.exec(`mkdir -p ${this.remoteDir}`)
@@ -46,7 +47,7 @@ class SSHConnector {
             .then(() => this.ssh.exec(`unzip ${this.remoteDir}/${container.zipName} -d ${this.remoteDir}`))
             .then(() => {
                 console.log('installing node modules'.yellow);
-                return this.ssh.exec(`cd ${this.remoteDir} && npm install --production`);
+                return this.ssh.exec(`cd ${this.remoteDir} && npm install --production`, debug);
             })
             .then(() => {
                 if (container.name !== null) {
@@ -64,10 +65,10 @@ class SSHConnector {
                     if (data.match(/Dockerfile/i)) {
                         console.log('found Dockerfile, building image.'.yellow);
 
-                        return this.ssh.exec(`cd ${this.remoteDir} && docker build -t ${container.name}-image .`)
-                            .then(() => this.ssh.exec(`docker run -d --name ${container.name} --publish ${port}:8080/tcp ${container.name}-image`));
+                        return this.ssh.exec(`cd ${this.remoteDir} && docker build -t ${container.name}-image .`, debug)
+                            .then(() => this.ssh.exec(`docker run -d --name ${container.name} --publish ${port}:8080/tcp ${container.name}-image`, debug));
                     } else {
-                        return this.ssh.exec(`docker run -d --name ${container.name} --volume ${this.remoteDir}:/volume --workdir /volume --publish ${port}:8080/tcp ${container.image} "npm start"`);
+                        return this.ssh.exec(`docker run -d --name ${container.name} --volume ${this.remoteDir}:/volume --workdir /volume --publish ${port}:8080/tcp ${container.image} npm start`, debug);
                     }
                 });
             })

@@ -1,6 +1,7 @@
 const colors = require('colors');
 
 const fsUtils = require('./../services/fs-utils');
+const netUtils = require('./../services/net-utils');
 
 /**
  * LocalConnector module
@@ -28,6 +29,7 @@ class LocalConnector {
      * @alias module:LocalConnector
      */
     publish(container) {
+        const debug = container.debug;
         this.remoteDir += `/${container.name || (new Date()).getTime()}`;
 
         return fsUtils.mkdir(this.remoteDir)
@@ -36,7 +38,7 @@ class LocalConnector {
             .then(() => fsUtils.unzip(`${this.remoteDir}/${container.zipName}`, this.remoteDir))
             .then(() => {
                 console.log('Installing node modules ...');
-                return fsUtils.exec(`cd ${this.remoteDir} && npm install --production`);
+                return fsUtils.exec(`cd ${this.remoteDir} && npm install --production`, debug);
             })
             .then(() => {
                 if (container.name !== null) {
@@ -45,18 +47,21 @@ class LocalConnector {
 
                 return;
             })
-            .then(() => {
-                if (container.port) {
-                    return container.port;
-                }
-
-                return 8080; //net.getFreePort(this.ip);
-            })
+            .then(() => netUtils.getFreePort(this.ip, container.port))
             .then(port => {
-                console.log('Try to run container on port ' + port);
+                console.log(`trying to run container on port ${port}`.yellow);
                 this.url = `http://localhost:${port}`;
-                // HERE check if there are Dockerfile
-                return fsUtils.exec(`docker run -d ${container.name !== null ? '--name ' + container.name : ''} --volume ${this.remoteDir}:/volume --workdir /volume --publish ${port}:8080/tcp ${container.image} npm start`, false);
+
+                return fsUtils.exec(`ls -l ${this.remoteDir}`).then(data => {
+                    if (data.match(/Dockerfile/i)) {
+                        console.log('found Dockerfile, building image.'.yellow);
+
+                        return fsUtils.exec(`cd ${this.remoteDir} && docker build -t ${container.name}-image .`, debug)
+                            .then(() => fsUtils.exec(`docker run -d --name ${container.name} --publish ${port}:8080/tcp ${container.name}-image`, debug));
+                    } else {
+                        return fsUtils.exec(`docker run -d --name ${container.name} --volume ${this.remoteDir}:/volume --workdir /volume --publish ${port}:8080/tcp ${container.image} npm start`, debug);
+                    }
+                });
             })
             .then(uid => console.log(`Container ${uid} running !`.green))
             .catch(err => console.log(String(err).red));

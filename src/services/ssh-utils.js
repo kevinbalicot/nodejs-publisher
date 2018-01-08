@@ -35,7 +35,8 @@ class SSHUtils {
                 }
 
                 if (consoleLog) {
-                    console.log(String(stdout.trim()).yellow);
+                    console.log(cmd);
+                    console.log(stdout.trim());
                 }
 
                 return resolve(stdout.trim());

@@ -159,16 +159,22 @@ class FsUtils {
     /**
      * Execute command
      * @param {string} command
+     * @param {boolean} consoleLog
      *
      * @return {Promise}
      *
      * @alias module:FsUtils
      */
-    static exec(command) {
+    static exec(command, consoleLog = false) {
         return new Promise((resolve, reject) => {
             exec(command, (err, stdout, stderr) => {
                 if (!!err) {
                     return reject(err);
+                }
+
+                if (consoleLog) {
+                    console.log(command);
+                    console.log(stdout.trim());
                 }
 
                 return resolve(stdout.trim());

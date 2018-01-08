@@ -16,7 +16,9 @@ program
   .option('-P, --ssh-port [port]', 'ssh port', null)
   .option('-p --port [port]', 'try to use custom port (default: automatically)')
   .option('-n, --name [name]', 'docker name', null)
-  .option('-im --image [image]', 'docker image', null);
+  .option('-im --image [image]', 'docker image', null)
+  .option('--verbose [verbose]', 'display verbose mode', false)
+  .option('--local [local]', 'publish in local only', false);
 
 program
     .command('list')
@@ -57,7 +59,7 @@ exec('cat $(pwd)/package.json', (err, stdout, stderr) => {
         console.log(e);
     }
 
-    if (!!params.ssh || !!program.sshUser) {
+    if ((!!params.ssh || !!program.sshUser) && !program.local) {
         connector = new SSHConnector(
             program.ip || params.ssh.ip,
             program.sshUser || params.ssh.user,
@@ -70,6 +72,7 @@ exec('cat $(pwd)/package.json', (err, stdout, stderr) => {
     container.name = program.name || params.name;
     container.image = program.image || params.image;
     container.port = program.port || params.port;
+    container.debug = !!program.verbose;
 
     let publisher = new Publisher(connector, container);
 
