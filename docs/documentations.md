@@ -179,7 +179,7 @@ FsUtils module
     * [FsUtils.removeDir(directory)](#exp_module_FsUtils--FsUtils.removeDir) ⇒ <code>Promise</code> ⏏
     * [FsUtils.zip(path, name)](#exp_module_FsUtils--FsUtils.zip) ⇒ <code>Promise</code> ⏏
     * [FsUtils.unzip(file, directory)](#exp_module_FsUtils--FsUtils.unzip) ⇒ <code>Promise</code> ⏏
-    * [FsUtils.exec(command)](#exp_module_FsUtils--FsUtils.exec) ⇒ <code>Promise</code> ⏏
+    * [FsUtils.exec(command, consoleLog)](#exp_module_FsUtils--FsUtils.exec) ⇒ <code>Promise</code> ⏏
 
 <a name="exp_module_FsUtils--FsUtils.pwd"></a>
 
@@ -259,14 +259,15 @@ Make a unzip command
 
 <a name="exp_module_FsUtils--FsUtils.exec"></a>
 
-### FsUtils.exec(command) ⇒ <code>Promise</code> ⏏
+### FsUtils.exec(command, consoleLog) ⇒ <code>Promise</code> ⏏
 Execute command
 
 **Kind**: Exported function  
 
-| Param | Type |
-| --- | --- |
-| command | <code>string</code> | 
+| Param | Type | Default |
+| --- | --- | --- |
+| command | <code>string</code> |  | 
+| consoleLog | <code>boolean</code> | <code>false</code> | 
 
 <a name="module_NetUtils"></a>
 
