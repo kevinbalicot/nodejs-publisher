@@ -45,10 +45,12 @@ class SSHConnector {
             .then(() => this.ssh.exec(`cd ${this.remoteDir} && rm -rf *`))
             .then(() => this.ssh.copy(`${container.zipPath}/${container.zipName}`, `${this.remoteDir}`))
             .then(() => this.ssh.exec(`unzip ${this.remoteDir}/${container.zipName} -d ${this.remoteDir}`))
+            .then(() => this.ssh.exec(!!container.preinstall ? `cd ${this.remoteDir} && ${container.preinstall}` : container.preinstall, debug))
             .then(() => {
                 console.log('installing node modules'.yellow);
                 return this.ssh.exec(`cd ${this.remoteDir} && npm install --production`, debug);
             })
+            .then(() => this.ssh.exec(!!container.postinstall ? `cd ${this.remoteDir} && ${container.postinstall}` : container.postinstall, debug))
             .then(() => {
                 if (container.name !== null) {
                     return this.removeContainer(container.name);
@@ -62,13 +64,18 @@ class SSHConnector {
                 this.url = `http://${this.ip}:${port}`;
 
                 return this.ssh.exec(`ls -l ${this.remoteDir}`).then(data => {
+                    let env = '';
+                    for (let prop in container.env) {
+                        env += `--env ${prop}=${container.env[prop]}`;
+                    }
+
                     if (data.match(/Dockerfile/i)) {
                         console.log('found Dockerfile, building image.'.yellow);
 
                         return this.ssh.exec(`cd ${this.remoteDir} && docker build -t ${container.name}-image .`, debug)
-                            .then(() => this.ssh.exec(`docker run -d --name ${container.name} --publish ${port}:8080/tcp ${container.name}-image`, debug));
+                            .then(() => this.ssh.exec(`docker run -d --name ${container.name} --publish ${port}:8080/tcp ${env} ${container.options} ${container.name}-image`, debug));
                     } else {
-                        return this.ssh.exec(`docker run -d --name ${container.name} --volume ${this.remoteDir}:/volume --workdir /volume --publish ${port}:8080/tcp ${container.image} npm start`, debug);
+                        return this.ssh.exec(`docker run -d --name ${container.name} --volume ${this.remoteDir}:/volume --workdir /volume --publish ${port}:8080/tcp ${env} ${container.options} ${container.image} npm start`, debug);
                     }
                 });
             })

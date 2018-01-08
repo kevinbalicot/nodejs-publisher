@@ -29,6 +29,10 @@ class SSHUtils {
      */
     exec(cmd, consoleLog = false) {
         return new Promise((resolve, reject) => {
+            if ('' === cmd || !cmd) {
+                resolve();
+            }
+
             exec(`ssh ${this.user}@${this.ip} -p ${this.port} "${cmd}"`, (err, stdout, stderr) => {
                 if (!!err) {
                     return reject(err);

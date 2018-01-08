@@ -24,7 +24,13 @@ Into `package.json`
       "port": 22
     },
     "image": "node:latest",
-    "port": "8080"
+    "port": "8080",
+    "options": "-p 9999:8080",
+    "env": {
+        "NODE_ENV": "production"
+    },
+    "preinstall": "echo preinstall",
+    "postinstall": "echo postinstall"
 }
 ```
 

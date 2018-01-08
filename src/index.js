@@ -48,11 +48,13 @@ program.parse(process.argv);
 
 exec('cat $(pwd)/package.json', (err, stdout, stderr) => {
     let params = {};
+    let scripts = {};
     let connector = {};
     let container = {};
 
     try {
         let pj = JSON.parse(stdout);
+        scripts = pj.scripts || {};
         params = pj.publish || {};
         params.name = pj.name || (new Date()).getTime();
     } catch (e) {
@@ -74,7 +76,13 @@ exec('cat $(pwd)/package.json', (err, stdout, stderr) => {
     container.port = program.port || params.port;
     container.debug = !!program.verbose;
 
-    let publisher = new Publisher(connector, container);
+    container.options = params.options || '';
+    container.env = params.env || {};
+    container.preinstall = params.preinstall || '';
+    container.postinstall = params.postinstall || '';
+
+    const prepublish = scripts.prepublish || params.prepublish || null;
+    const publisher = new Publisher(connector, container);
 
     if (!!program.args.find(arg => arg === 'list')) {
         connector.listContainers();
@@ -84,7 +92,12 @@ exec('cat $(pwd)/package.json', (err, stdout, stderr) => {
         connector.stopContainer(program.args[1] || params.name);
     } else if (!!program.args.find(arg => arg === 'start')) {
         connector.startContainer(program.args[1] || params.name);
+    } else if (null != prepublish) {
+        exec(`cd $(pwd) && ${prepublish}`, (err, stdout, stderr) => {
+            console.log(err || stdout.trim() || stderr);
+            publisher.run().then(() => process.exit());
+        });
     } else {
-        publisher.run();
+        publisher.run().then(() => process.exit());
     }
 });

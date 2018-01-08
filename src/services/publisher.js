@@ -48,7 +48,7 @@ class Publisher {
      * @alias module:Publisher
      */
     clean() {
-        fs.removeDir(this.tmp);
+        return fs.removeDir(this.tmp);
     }
 
     /**
@@ -58,11 +58,11 @@ class Publisher {
      * @alias module:Publisher
      */
     run() {
-        this.prepare()
+        return this.prepare()
             .then(() => this.connector.publish(this.container))
             .then(() => {
                 console.log(`Container must be running at ${this.connector.url}`.cyan);
-                this.clean();
+                return this.clean();
             });
     }
 }
