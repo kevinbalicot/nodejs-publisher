@@ -124,7 +124,7 @@ class FsUtils {
     static zip(path, name) {
         console.log(`creating zip named ${name} of ${path} directory`.yellow);
         return new Promise((resolve, reject) => {
-            exec(`cd ${path} && zip -r ${name}.zip . -x node_modules\\*`, (err, stdout, stderr) => {
+            exec(`cd ${path} && zip -r ${name}.zip . -x node_modules\\* -x angular_modules\\*`, (err, stdout, stderr) => {
                 if (!!err) {
                     return reject(err);
                 }
