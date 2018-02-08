@@ -1,3 +1,13 @@
+<a name="0.6.0"></a>
+# [0.6.0](https://github.com/kevinbalicot/nodejs-publisher/compare/v0.5.0...v0.6.0) (2018-02-08)
+
+
+### Features
+
+* **zip:** Ignore angular_modules to zip archiver ([331484b](https://github.com/kevinbalicot/nodejs-publisher/commit/331484b))
+
+
+
 <a name="0.5.0"></a>
 # [0.5.0](https://github.com/kevinbalicot/nodejs-publisher/compare/v0.4.1...v0.5.0) (2018-01-08)
 
