@@ -72,7 +72,7 @@ class SSHConnector {
                     if (data.match(/Dockerfile/i)) {
                         console.log('found Dockerfile, building image.'.yellow);
 
-                        return this.ssh.exec(`cd ${this.remoteDir} && docker build -t ${container.name}-image .`, debug)
+                        return this.ssh.exec(`cd ${this.remoteDir} && docker build --no-cache -t ${container.name}-image .`, debug)
                             .then(() => this.ssh.exec(`docker run -d --name ${container.name} --publish ${port}:8080/tcp ${env} ${container.options} ${container.name}-image`, debug));
                     } else {
                         return this.ssh.exec(`docker run -d --name ${container.name} --volume ${this.remoteDir}:/volume --workdir /volume --publish ${port}:8080/tcp ${env} ${container.options} ${container.image} npm start`, debug);
